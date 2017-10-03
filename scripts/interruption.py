@@ -78,7 +78,7 @@ class realsense_stream:
         sleep(self.userSpokeThreshold + 2)
 
       if not rospy.is_shutdown():
-        threading.Timer(0.5, self.debugOutput).start()
+        threading.Timer(0.5, self.mainLoop).start()
 
 
     def parseIsSpeaking(self, msg):
