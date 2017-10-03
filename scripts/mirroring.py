@@ -29,7 +29,7 @@ class realsense_stream:
         self.animationmodePub.publish(self.animationmode)
 
     def parseAudioSensor(self, msg):
-      self.decibelCurrent = msg.Decibels
+      self.decibelCurrent = msg.Decibel
 
     def parseRealsense(self, msg):
         if len(msg.faces) == 1:
