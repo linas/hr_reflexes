@@ -28,7 +28,7 @@ from std_msgs.msg import UInt8, String
 
 class realsense_stream:
     def __init__(self):
-        self.userSpokeThreshold = 2.0
+        self.userSpokeThreshold = 4.0
         self.avgMouthOpenThreshold = 0.2
         self.avgMouthOpenWindowSize = 5
         self.avgMouthOpenStack = [0 for _ in range(self.avgMouthOpenWindowSize)]
