@@ -26,16 +26,15 @@ from pau2motors.msg import pau
 from std_msgs.msg import UInt8, String
 
 class realsense_stream:
-    self.userSpokeThreshold = 5.0
-    self.avgMouthOpenWindowSize = 20
-
-    self.activeFaces = 0
-    self.avgMouthOpen = 0.0
-    self.sophiaSpeaking = False
-    self.userSpokeRecently = False
-
-
     def __init__(self):
+        self.userSpokeThreshold = 5.0
+        self.avgMouthOpenWindowSize = 20
+
+        self.activeFaces = 0
+        self.avgMouthOpen = 0.0
+        self.sophiaSpeaking = False
+        self.userSpokeRecently = False
+
         rospy.init_node('interrupt_reflex')
 
         # Subscribers
