@@ -65,9 +65,9 @@ class realsense_stream:
     def mainLoop(self):
       print("activeFaces: %d, mouthOpen: %f, sophia speaking: %d, user spoke recently: %d" % (self.activeFaces, self.avgMouthOpen, self.sophiaSpeaking, self.userSpokeRecently))
 
-      if self.activeFaces == 1 
-         and self.avgMouthOpen >= self.avgMouthOpenThreshold 
-         and self.sophiaSpeaking 
+      if self.activeFaces == 1 \
+         and self.avgMouthOpen >= self.avgMouthOpenThreshold \
+         and self.sophiaSpeaking \
          and self.userSpokeRecently:
 
         print("Interruption detected!")
