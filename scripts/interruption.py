@@ -48,7 +48,7 @@ class realsense_stream:
         self.publishSpeechEvent = rospy.Publisher('/sophia6/tts', String, queue_size=1)
 
         # Debug output
-        threading.Timer(1, debugOutput).start()
+        threading.Timer(0.5, self.debugOutput).start()
 
 
 
@@ -58,7 +58,10 @@ class realsense_stream:
       if self.activeFaces == 0 and self.avgMouthOpen >= 0.5 and self.sophiaSpeaking and self.userSpokeRecently:
         print("TRIGGERED!")
 
-      threading.Timer(1, debugOutput).start()
+      try:
+        threading.Timer(1, self.debugOutput).start()
+      except KeyboardInterrupt:
+        print("exiting...")
 
 
     def parseIsSpeaking(self, msg):
@@ -72,7 +75,7 @@ class realsense_stream:
 
     def parseLastSpeechInput(self, msg):
       self.userSpokeRecently = True
-      threading.Timer(self.userSpokeThreshold, resetLastSpeechInput).start()
+      threading.Timer(self.userSpokeThreshold, self.resetLastSpeechInput).start()
 
 
     def parseRealsense(self, msg):
