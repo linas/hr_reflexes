@@ -28,7 +28,8 @@ from std_msgs.msg import UInt8, String
 class realsense_stream:
     def __init__(self):
         self.userSpokeThreshold = 5.0
-        self.avgMouthOpenWindowSize = 20
+        self.avgMouthOpenThreshold = 0.2
+        self.avgMouthOpenWindowSize = 5
         self.avgMouthOpenStack = [0 for _ in range(self.avgMouthOpenWindowSize)]
 
         self.activeFaces = 0
@@ -48,20 +49,20 @@ class realsense_stream:
         self.publishSpeechEvent = rospy.Publisher('/sophia6/tts', String, queue_size=1)
 
         # Debug output
-        threading.Timer(0.5, self.debugOutput).start()
+        self.debugOutput()
 
 
 
     def debugOutput(self):
       print("activeFaces: %d, mouthOpen: %f, sophia speaking: %d, user spoke recently: %d" % (self.activeFaces, self.avgMouthOpen, self.sophiaSpeaking, self.userSpokeRecently))
 
-      if self.activeFaces == 0 and self.avgMouthOpen >= 0.5 and self.sophiaSpeaking and self.userSpokeRecently:
+      if self.activeFaces == 0 and self.avgMouthOpen >= self.avgMouthOpenThreshold and self.sophiaSpeaking and self.userSpokeRecently:
         print("TRIGGERED!")
+        self.publishShutup.publish(String("shutup"))
+        self.publishSpeechEvent.publish(String("Oh I'm sorry, did not mean to interrupt"))
 
-      try:
-        threading.Timer(1, self.debugOutput).start()
-      except KeyboardInterrupt:
-        print("exiting...")
+      if not rospy.is_shutdown():
+        threading.Timer(0.5, self.debugOutput).start()
 
 
     def parseIsSpeaking(self, msg):
@@ -87,7 +88,7 @@ class realsense_stream:
           mouthopen = float(face.mouth_open) / 100.0
 
           self.avgMouthOpenStack.pop(0)
-          self.avgMouthOpenStack.push(mouthopen)
+          self.avgMouthOpenStack.append(mouthopen)
 
           self.avgMouthOpen = np.array(self.avgMouthOpenStack).mean()
         else:
