@@ -57,7 +57,7 @@ class realsense_stream:
     def debugOutput(self):
       print("activeFaces: %d, mouthOpen: %f, sophia speaking: %d, user spoke recently: %d" % (self.activeFaces, self.avgMouthOpen, self.sophiaSpeaking, self.userSpokeRecently))
 
-      if self.activeFaces == 0 and self.avgMouthOpen >= self.avgMouthOpenThreshold and self.sophiaSpeaking and self.userSpokeRecently:
+      if self.activeFaces == 1 and self.avgMouthOpen >= self.avgMouthOpenThreshold and self.sophiaSpeaking and self.userSpokeRecently:
         print("TRIGGERED!")
         self.publishShutup.publish(String("shutup"))
         self.publishSpeechEvent.publish(String("Oh I'm sorry, did not mean to interrupt"))
