@@ -29,6 +29,7 @@ class realsense_stream:
     def __init__(self):
         self.userSpokeThreshold = 5.0
         self.avgMouthOpenWindowSize = 20
+        self.avgMouthOpenStack = [0 for _ in range(self.avgMouthOpenWindowSize)]
 
         self.activeFaces = 0
         self.avgMouthOpen = 0.0
@@ -73,8 +74,6 @@ class realsense_stream:
       self.userSpokeRecently = True
       threading.Timer(self.userSpokeThreshold, resetLastSpeechInput).start()
 
-
-    self.avgMouthOpenStack = [0 for _ in range(self.avgMouthOpenWindowSize)]
 
     def parseRealsense(self, msg):
         self.activeFaces = len(msg.faces)
