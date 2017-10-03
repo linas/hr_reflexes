@@ -62,6 +62,8 @@ class realsense_stream:
         self.publishShutup.publish(String("shutup"))
         self.publishSpeechEvent.publish(String("Oh I'm sorry, did not mean to interrupt"))
 
+        sleep(5)
+
       if not rospy.is_shutdown():
         threading.Timer(0.5, self.debugOutput).start()
 
