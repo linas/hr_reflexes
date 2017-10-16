@@ -2,7 +2,7 @@
 from time import sleep
 import rospy
 from realsense_ros.msg import *
-from pau2motors.msg import pau
+from hr_msgs.msg import pau
 from std_msgs.msg import UInt8
 from audio_stream.msg import audiodata
 
