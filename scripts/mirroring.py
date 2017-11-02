@@ -16,7 +16,7 @@ class realsense_stream:
 
         # Subscribers
         rospy.Subscriber('/realsense', Vision, self.parseRealsense)
-        rospy.Subscriber('/sophia6/audio_sensors', audiodata, self.parseAudioSensor) # TODO: Make independent of robot name
+        rospy.Subscriber('/sophia11/audio_sensors', audiodata, self.parseAudioSensor) # TODO: Make independent of robot name
 
         # Publishers
         self.pub = rospy.Publisher('/blender_api/set_pau', pau, queue_size=10)
