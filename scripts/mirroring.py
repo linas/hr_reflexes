@@ -5,16 +5,18 @@ from realsense_ros.msg import *
 from pau2motors.msg import pau
 from std_msgs.msg import UInt8
 from audio_stream.msg import audiodata
+import numpy as np
+
 
 class realsense_stream:
     def __init__(self):
         # Configuratoin parameters
-        self.decibelLimit = 40.0
+        self.decibelLimit = 50.0
         self.decibelCurrent = 0.0
 
         # percentage of sensor value that gets added each step.
         self.browDelay = 0.25
-        self.mouthDelay = 0.0 # deactivate mouth mirroring...
+        self.mouthDelay = 0.025 # deactivate mouth mirroring...
         self.blinkDelay = 0.3
 
         #
@@ -30,7 +32,7 @@ class realsense_stream:
 
         # Subscribers
         rospy.Subscriber('/realsense', Vision, self.parseRealsense)
-        rospy.Subscriber('/sophia11/audio_sensors', audiodata, self.parseAudioSensor) # TODO: Make independent of robot name
+        rospy.Subscriber('/sophia6/audio_sensors', audiodata, self.parseAudioSensor) # TODO: Make independent of robot name
 
         # Publishers
         self.pub = rospy.Publisher('/blender_api/set_pau', pau, queue_size=10)
@@ -60,10 +62,16 @@ class realsense_stream:
           self.rightBrowRaise = ((1.0 - self.browDelay) * self.rightBrowRaise) + (self.browDelay * (float(face.right_brow_raise) / 100.0))
           self.rightBrowLower = ((1.0 - self.browDelay) * self.rightBrowLower) + (self.browDelay * (float(face.right_brow_lower) / 100.0))
 
-          self.mouthOpen = ((1.0 - self.mouthDelay) * self.mouthOpen) + (self.mouthDelay * (float(face.mouth_open) / 100.0))
           self.eyesClosed = ((1.0 - self.blinkDelay) * self.eyesClosed) + (self.blinkDelay * (float(face.left_eye_closed + face.right_eye_closed) / 200.0))
 
-          
+          self.mouthOpen = ((1.0 - self.mouthDelay) * self.mouthOpen) + (self.mouthDelay * (float(face.mouth_open) / 100.0))
+
+          mouthOpenLoudnessDampener = np.minimum(1.0, np.power(self.decibelLimit / (self.decibelCurrent + 1e-8), 10))
+
+          self.mouthOpen = self.mouthOpen * mouthOpenLoudnessDampener
+
+          if (float(face.mouth_open) / 100.0) < 0.2:
+            self.mouthOpen *= 0.8
 
           msg = pau()
           msg.m_coeffs = [self.mouthOpen, self.leftBrowRaise, self.leftBrowRaise/1.5, self.leftBrowLower, 
