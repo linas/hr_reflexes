@@ -25,6 +25,7 @@ import random
 from realsense_ros.msg import *
 from pau2motors.msg import pau
 from std_msgs.msg import UInt8, String
+from hr_msgs.msg import TTS, ChatMessage
 
 class realsense_stream:
     def __init__(self):
@@ -46,6 +47,8 @@ class realsense_stream:
                           "Oh what?",
                           "Mhh?"]
 
+        self.language = "en-US"
+
         rospy.init_node('interrupt_reflex')
 
         # Subscribers
@@ -55,7 +58,16 @@ class realsense_stream:
 
         # Publishers
         self.publishShutup = rospy.Publisher('/sophia6/tts_control', String, queue_size=1)
-        self.publishSpeechEvent = rospy.Publisher('/sophia6/tts', String, queue_size=1)
+        self.publishSpeechEvent = rospy.Publisher('/sophia6/tts', TTS, queue_size=1)
+        self.publishRepeatTrigger = rospy.Publisher('/sophia6/speech', ChatMessage, queue_size=1)
+
+        # repeattrigger mesage
+        self.repeatTrigger = ChatMessage()
+        self.repeatTrigger.utterance = "repeat that please"
+        self.repeatTrigger.lang = "en-US"
+        self.repeatTrigger.confidence = 100
+        self.repeatTrigger.source = "cloudspeech"
+        self.repeatTrigger.audio_path = ""
 
         # Debug output
         self.mainLoop()
@@ -72,7 +84,11 @@ class realsense_stream:
 
         print("Interruption detected!")
         self.publishShutup.publish(String("shutup"))
-        self.publishSpeechEvent.publish(String(random.choice(self.apologies)))
+
+        sleep(0.45)
+
+        self.publishSpeechEvent.publish(String(random.choice(self.apologies)), self.language)
+        self.publishRepeatTrigger.publish(self.repeatTrigger)
 
         # refractory period
         sleep(self.userSpokeThreshold + 2)
@@ -113,4 +129,3 @@ class realsense_stream:
 if __name__ == "__main__":
     stream = realsense_stream()
     rospy.spin()
-
